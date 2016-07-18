@@ -7,6 +7,30 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <!-- drive comboboxes -->
+        <ComboBox Name="CBLeft" Grid.Column="0" Margin="5px"></ComboBox>
+        <ComboBox Name="CBRight" Grid.Column="1" Margin="5px"></ComboBox>
+        <!-- listboxes -->
+        <ListBox Name="LBLeft" Grid.Row="1" Grid.Column="0" Margin="5px"></ListBox>
+        <ListBox Name="LBRight" Grid.Row="1" Grid.Column="1" Margin="5px"></ListBox>
+        <!-- buttons -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <DockPanel HorizontalAlignment="Center">
+                <Button Margin="5px" Padding="15, 10, 15, 10" > Otwórz
+                </Button>
+                <Button Margin="5px" Padding="15, 10, 15, 10">Kopiuj</Button>
+                <Button Margin="5px" Padding="15, 10, 15, 10">Przenieś</Button>
+                <Button Margin="5px" Padding="15, 10, 15, 10">Przenieś</Button>
+            </DockPanel>
+        </Grid>
     </Grid>
 </Window>
