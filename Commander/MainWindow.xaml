@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Commander"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
+        Title="MainWindow" Height="450" Width="600" Loaded="Window_Loaded">
+    <Grid Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -17,11 +17,34 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <!-- drive comboboxes -->
-        <ComboBox Name="CBLeft" Grid.Column="0" Margin="5px"></ComboBox>
-        <ComboBox Name="CBRight" Grid.Column="1" Margin="5px"></ComboBox>
+        <ComboBox Name="CBLeft" Grid.Column="0" Margin="5px" SelectedIndex="0" SelectionChanged="ComboBoxSelectionChanged"></ComboBox>
+        <ComboBox Name="CBRight" Grid.Column="1" Margin="5px" SelectedIndex="0" SelectionChanged="ComboBoxSelectionChanged"></ComboBox>
         <!-- listboxes -->
+        <!--
         <ListBox Name="LBLeft" Grid.Row="1" Grid.Column="0" Margin="5px"></ListBox>
-        <ListBox Name="LBRight" Grid.Row="1" Grid.Column="1" Margin="5px"></ListBox>
+        -->
+        
+        <ListView Name="LVLeft" Grid.Row="1" Grid.Column="0" Margin="5" HorizontalContentAlignment="Stretch" MouseDoubleClick="ListViewMouseDoubleClick">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Nazwa" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Type}"/>
+                    <GridViewColumn Header="Rozmiar" DisplayMemberBinding="{Binding Size}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <ListView Name="LVRight" Grid.Row="1" Grid.Column="1" Margin="5" HorizontalContentAlignment="Stretch" MouseDoubleClick="ListViewMouseDoubleClick">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Nazwa" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Type}"/>
+                    <GridViewColumn Header="Rozmiar" DisplayMemberBinding="{Binding Size}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+
         <!-- buttons -->
         <Grid Grid.Row="2" Grid.ColumnSpan="2">
             <DockPanel HorizontalAlignment="Center">
