@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Commander"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="600" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="700" Loaded="Window_Loaded">
     <Grid Name="MainGrid">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -19,40 +20,39 @@
         <!-- drive comboboxes -->
         <ComboBox Name="CBLeft" Grid.Column="0" Margin="5px" SelectedIndex="0" SelectionChanged="ComboBoxSelectionChanged"></ComboBox>
         <ComboBox Name="CBRight" Grid.Column="1" Margin="5px" SelectedIndex="0" SelectionChanged="ComboBoxSelectionChanged"></ComboBox>
-        <!-- listboxes -->
-        <!--
-        <ListBox Name="LBLeft" Grid.Row="1" Grid.Column="0" Margin="5px"></ListBox>
-        -->
-        
-        <ListView Name="LVLeft" Grid.Row="1" Grid.Column="0" Margin="5" HorizontalContentAlignment="Stretch" MouseDoubleClick="ListViewMouseDoubleClick">
+
+        <!-- label with paths -->
+        <Label Name="LLeft" Grid.Row="1" Grid.Column="0" />
+        <Label Name="LRight" Grid.Row="1" Grid.Column="1" />
+
+        <!-- listviews -->
+        <ListView Name="LVLeft" Grid.Row="2" Grid.Column="0" Margin="5" HorizontalContentAlignment="Stretch" MouseDoubleClick="ListViewMouseDoubleClick">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Nazwa" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Type}"/>
-                    <GridViewColumn Header="Rozmiar" DisplayMemberBinding="{Binding Size}"/>
+                    <GridViewColumn Header="Nazwa" Width="185" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Typ" Width="45" DisplayMemberBinding="{Binding Type}"/>
+                    <GridViewColumn Header="Rozmiar" Width="75" DisplayMemberBinding="{Binding Size}"/>
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <ListView Name="LVRight" Grid.Row="1" Grid.Column="1" Margin="5" HorizontalContentAlignment="Stretch" MouseDoubleClick="ListViewMouseDoubleClick">
+        <ListView Name="LVRight" Grid.Row="2" Grid.Column="1" Margin="5" HorizontalContentAlignment="Stretch" MouseDoubleClick="ListViewMouseDoubleClick">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Nazwa" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Type}"/>
-                    <GridViewColumn Header="Rozmiar" DisplayMemberBinding="{Binding Size}"/>
+                    <GridViewColumn Header="Nazwa" Width="185" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Typ" Width="45" DisplayMemberBinding="{Binding Type}"/>
+                    <GridViewColumn Header="Rozmiar" Width="75" DisplayMemberBinding="{Binding Size}"/>
                 </GridView>
             </ListView.View>
         </ListView>
-
 
         <!-- buttons -->
-        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+        <Grid Grid.Row="3" Grid.ColumnSpan="2">
             <DockPanel HorizontalAlignment="Center">
-                <Button Margin="5px" Padding="15, 10, 15, 10" > Otwórz
-                </Button>
+                <Button Margin="5px" Padding="15, 10, 15, 10" >Otwórz</Button>
                 <Button Margin="5px" Padding="15, 10, 15, 10">Kopiuj</Button>
                 <Button Margin="5px" Padding="15, 10, 15, 10">Przenieś</Button>
-                <Button Margin="5px" Padding="15, 10, 15, 10">Przenieś</Button>
+                <Button Margin="5px" Padding="15, 10, 15, 10">Usuń</Button>
             </DockPanel>
         </Grid>
     </Grid>

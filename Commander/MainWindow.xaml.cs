@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -54,9 +55,6 @@ namespace Commander
 
             currentPathLeft = ((Drive) CBLeft.SelectedItem).Name;
             currentPathRight = ((Drive) CBRight.SelectedItem).Name;
-
-            //LoadDirectory(currentPathRight, currentPathRight, LVRight);
-            //LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
         }
 
 
@@ -68,12 +66,14 @@ namespace Commander
             string newPath;
             bool isLeft = true;
 
+            //checking which listview we are using
             if (currentLV.Name == "LVRight")
             {
                 isLeft = false;
                 currentPath = currentPathRight;
             }
 
+            //checking if we are in drive 
             if (PathIsDrive(currentPath))
             {
                 newPath = currentPath + currentItem.Name;
@@ -83,28 +83,29 @@ namespace Commander
                 newPath = currentPath + "\\" + currentItem.Name;
             }
 
+            //
             if (currentItem.Type == "<dir>")
             {
-                if (isLeft)
-                {
-                    
-                    currentPathLeft = LoadDirectory(currentPathLeft, newPath, currentLV);
-                }
-                else
-                {
-                    currentPathRight = LoadDirectory(currentPathRight, newPath, currentLV);
-                }
+                currentPath = LoadDirectory(currentPath, newPath, currentLV);
             }
             else if (currentItem.Name == "..")
             {
-                if (isLeft)
-                {
-                    currentPathLeft = LoadDirectory(currentPathLeft, Directory.GetParent(currentPathLeft).ToString(), currentLV);
-                }
-                else
-                {
-                    currentPathRight = LoadDirectory(currentPathRight, Directory.GetParent(currentPathRight).ToString(), currentLV);
-                }
+                currentPath = LoadDirectory(currentPath, Directory.GetParent(currentPath).ToString(), currentLV);
+            }
+            else
+            {
+                Process.Start(currentPath + "\\" + currentItem.Name + currentItem.Type);
+            }
+
+            //saving new paths
+            if (isLeft)
+            {
+
+                currentPathLeft = currentPath;
+            }
+            else
+            {
+                currentPathRight = currentPath;
             }
 
         }
@@ -119,11 +120,13 @@ namespace Commander
             {
                 currentLV = LVRight;
                 currentPathRight = LoadDirectory(currentPathRight, currentPath, currentLV);
+                LRight.Content = currentPathRight;
             }
             else
             {
                 currentLV = LVLeft;
                 currentPathLeft = LoadDirectory(currentPathLeft, currentPath, currentLV);
+                LLeft.Content = currentPathLeft;
             }
         }
 
@@ -150,13 +153,29 @@ namespace Commander
                 foreach (string file in files)
                 {
                     FileInfo fileInfo = new FileInfo(file);
-                    listView.Items.Add(new Item(fileInfo.Name, fileInfo.Extension, SizeConverter(fileInfo.Length), file));
+                    listView.Items.Add(new Item(System.IO.Path.GetFileNameWithoutExtension(file), fileInfo.Extension, SizeConverter(fileInfo.Length), file));
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                if (listView.Name == "LVRight")
+                {
+                    LRight.Content = oldPath;
+                }
+                else
+                {
+                    LLeft.Content = oldPath;
+                }
                 return oldPath;
+            }
+            if (listView.Name == "LVRight")
+            {
+                LRight.Content = newPath;
+            }
+            else
+            {
+                LLeft.Content = newPath;
             }
             return newPath;
         }
