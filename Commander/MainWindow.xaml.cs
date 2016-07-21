@@ -30,6 +30,7 @@ namespace Commander
             InitializeComponent();
         }
 
+        #region events
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             drivesList = new List<Drive>();
@@ -61,6 +62,12 @@ namespace Commander
         private void ListViewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var currentLV = sender as ListView;
+
+            if (currentLV.SelectedIndex < 0)
+            {
+                return;
+            }
+
             var currentItem = currentLV.SelectedItem as Item;
             string currentPath = currentPathLeft;
             string newPath;
@@ -86,11 +93,14 @@ namespace Commander
             //
             if (currentItem.Type == "<dir>")
             {
-                currentPath = LoadDirectory(currentPath, newPath, currentLV);
-            }
-            else if (currentItem.Name == "..")
-            {
-                currentPath = LoadDirectory(currentPath, Directory.GetParent(currentPath).ToString(), currentLV);
+                if (currentItem.Name == "..")
+                {
+                    currentPath = LoadDirectory(currentPath, Directory.GetParent(currentPath).ToString(), currentLV);
+                }
+                else
+                {
+                    currentPath = LoadDirectory(currentPath, newPath, currentLV);
+                }
             }
             else
             {
@@ -129,6 +139,32 @@ namespace Commander
                 LLeft.Content = currentPathLeft;
             }
         }
+        #endregion
+
+        #region methods
+        private void Copy(string sourcePath, string targetPath, Item itemToCopy)
+        {
+            string sourceFile = System.IO.Path.Combine(sourcePath, itemToCopy.Name + itemToCopy.Type);
+            string targetFile = System.IO.Path.Combine(targetPath, itemToCopy.Name + itemToCopy.Type);
+
+            MessageBox.Show(sourceFile + "\n" + targetFile);
+
+            if (File.Exists(targetPath))
+            {
+                if (MessageBox.Show("Czy chcesz nadpisać plik?", "Plik istnieje", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    File.Copy(sourceFile, targetFile, true);
+                }
+                else
+                {
+                    File.Copy(sourceFile, targetFile, false);
+                }
+            }
+            else
+            {
+                File.Copy(sourceFile, targetFile);
+            }
+        }
 
         private string LoadDirectory(string oldPath, string newPath, ListView listView)
         {
@@ -141,7 +177,7 @@ namespace Commander
                 
                 if (!PathIsDrive(newPath))
                 {
-                    listView.Items.Add(new Item("..", "", ""));
+                    listView.Items.Add(new Item("..", "<dir>", ""));
                 }
 
                 foreach (string dir in dirs)
@@ -211,5 +247,34 @@ namespace Commander
                 return string.Format("{0:f2} GB", size / (1024 * 1024 * 1024));
             }
         }
+        #endregion
+
+        #region commands
+        private void Copy_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if ((LVLeft.IsFocused == true && LVLeft.SelectedIndex > -1) || (LVRight.IsFocused == true && LVRight.SelectedIndex > -1))
+            {
+                e.CanExecute = true;
+            }
+            else
+            {
+                e.CanExecute = false;
+            }
+        }
+
+        private void Copy_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (LVLeft.IsFocused == true && LVLeft.SelectedIndex > -1)
+            {
+                Item itemToCopy = LVLeft.SelectedItem as Item;
+                Copy(currentPathLeft, currentPathRight, itemToCopy);
+            }
+            else if (LVRight.IsFocused == true && LVRight.SelectedIndex > -1)
+            {
+                Item itemToCopy = LVRight.SelectedItem as Item;
+                Copy(currentPathRight, currentPathLeft, itemToCopy);
+            }
+        }
+        #endregion
     }
 }
