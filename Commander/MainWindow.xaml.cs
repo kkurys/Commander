@@ -57,8 +57,7 @@ namespace Commander
             currentPathLeft = ((Drive) CBLeft.SelectedItem).Name;
             currentPathRight = ((Drive) CBRight.SelectedItem).Name;
         }
-
-
+        
         private void ListViewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var currentLV = sender as ListView;
@@ -91,7 +90,7 @@ namespace Commander
             }
 
             //
-            if (currentItem.Type == "<dir>")
+            if (currentItem.IsDirectory())
             {
                 if (currentItem.Name == "..")
                 {
@@ -144,26 +143,92 @@ namespace Commander
         #region methods
         private void Copy(string sourcePath, string targetPath, Item itemToCopy)
         {
-            string sourceFile = System.IO.Path.Combine(sourcePath, itemToCopy.Name + itemToCopy.Type);
-            string targetFile = System.IO.Path.Combine(targetPath, itemToCopy.Name + itemToCopy.Type);
-
-            MessageBox.Show(sourceFile + "\n" + targetFile);
-
-            if (File.Exists(targetPath))
+            try
             {
-                if (MessageBox.Show("Czy chcesz nadpisać plik?", "Plik istnieje", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                if (itemToCopy.IsDirectory())
                 {
-                    File.Copy(sourceFile, targetFile, true);
+                    //DO ZROBIENIA REKURENCYJNE - KOPIOWANIE CAŁEGO DRZEWA FOLDERÓW I PLIKÓW
                 }
                 else
                 {
-                    File.Copy(sourceFile, targetFile, false);
+                    string sourceFile = System.IO.Path.Combine(sourcePath, itemToCopy.Name + itemToCopy.Type);
+                    string targetFile = System.IO.Path.Combine(targetPath, itemToCopy.Name + itemToCopy.Type);
+
+                    if (File.Exists(targetFile))
+                    {
+                        if (MessageBox.Show("Czy chcesz nadpisać plik?", "Plik istnieje", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                        {
+                            File.Copy(sourceFile, targetFile, true);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        File.Copy(sourceFile, targetFile);
+                    }
                 }
             }
-            else
+            catch(Exception ex)
             {
-                File.Copy(sourceFile, targetFile);
+                MessageBox.Show(ex.Message);
             }
+        }
+
+        private void Move(string sourcePath, string targetPath, Item itemToCopy)
+        {
+            try
+            {
+                if (itemToCopy.IsDirectory())
+                {
+                    string sourceFile = System.IO.Path.Combine(sourcePath, itemToCopy.Name);
+                    string targetFile = System.IO.Path.Combine(targetPath, itemToCopy.Name);
+
+                    if (Directory.Exists(targetFile))
+                    {
+                        if (MessageBox.Show("Czy chcesz nadpisać plik?", "Plik istnieje", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                        {
+                            Directory.Move(sourceFile, targetFile);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Directory.Move(sourceFile, targetFile);
+                    }
+                }
+                else
+                {
+                    string sourceFile = System.IO.Path.Combine(sourcePath, itemToCopy.Name + itemToCopy.Type);
+                    string targetFile = System.IO.Path.Combine(targetPath, itemToCopy.Name + itemToCopy.Type);
+
+                    if (File.Exists(targetFile))
+                    {
+                        if (MessageBox.Show("Czy chcesz nadpisać plik?", "Plik istnieje", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                        {
+                            File.Move(sourceFile, targetFile);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        File.Move(sourceFile, targetFile);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
 
         private string LoadDirectory(string oldPath, string newPath, ListView listView)
@@ -247,34 +312,116 @@ namespace Commander
                 return string.Format("{0:f2} GB", size / (1024 * 1024 * 1024));
             }
         }
+
+        public bool ButtonsLeft(CanExecuteRoutedEventArgs e)
+        {
+            if (e.Parameter.ToString() == "CopyRight" || e.Parameter.ToString() == "MoveRight" || e.Parameter.ToString() == "DeleteLeft")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool ButtonsRight(CanExecuteRoutedEventArgs e)
+        {
+            if (e.Parameter.ToString() == "CopyLeft" || e.Parameter.ToString() == "MoveLeft" || e.Parameter.ToString() == "DeleteRight")
+            {
+                return true;
+            }
+            return false;
+        }
+
         #endregion
 
         #region commands
-        private void Copy_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void ListViewItemSelected(object sender, CanExecuteRoutedEventArgs e)
         {
-            if ((LVLeft.IsFocused == true && LVLeft.SelectedIndex > -1) || (LVRight.IsFocused == true && LVRight.SelectedIndex > -1))
+            if (LVRight != null)
             {
-                e.CanExecute = true;
-            }
-            else
-            {
-                e.CanExecute = false;
+                if (ButtonsRight(e) && LVRight.SelectedIndex >= 0)
+                {
+                    e.CanExecute = true;
+                }
+                else if (ButtonsLeft(e) && LVLeft.SelectedIndex >= 0)
+                {
+                    e.CanExecute = true;
+                }
+                else
+                {
+                    e.CanExecute = false;
+                }
             }
         }
 
-        private void Copy_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void CopyOrMove_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (LVLeft.IsFocused == true && LVLeft.SelectedIndex > -1)
+            if (e.Parameter.ToString() == "CopyRight")
             {
                 Item itemToCopy = LVLeft.SelectedItem as Item;
                 Copy(currentPathLeft, currentPathRight, itemToCopy);
+                LoadDirectory(currentPathRight, currentPathRight, LVRight);
             }
-            else if (LVRight.IsFocused == true && LVRight.SelectedIndex > -1)
+            else if (e.Parameter.ToString() == "CopyLeft")
             {
                 Item itemToCopy = LVRight.SelectedItem as Item;
                 Copy(currentPathRight, currentPathLeft, itemToCopy);
+                LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+            }
+            else if (e.Parameter.ToString() == "MoveRight")
+            {
+                Item itemToCopy = LVLeft.SelectedItem as Item;
+                Move(currentPathLeft, currentPathRight, itemToCopy);
+                LoadDirectory(currentPathRight, currentPathRight, LVRight);
+                LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+            }
+            else if (e.Parameter.ToString() == "MoveLeft")
+            {
+                Item itemToCopy = LVRight.SelectedItem as Item;
+                Move(currentPathRight, currentPathLeft, itemToCopy);
+                LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+                LoadDirectory(currentPathRight, currentPathRight, LVRight);
             }
         }
+        
+        private void Delete_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (MessageBox.Show("Czy chcesz usunąć pliki?", "Usuń pliki", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                if (e.Parameter.ToString() == "DeleteRight")
+                {
+                    Item itemToDelete = LVRight.SelectedItem as Item;
+                    if (itemToDelete.IsDirectory())
+                    {
+                        Directory.Delete(itemToDelete.File, true);
+                    }
+                    else
+                    {
+                        File.Delete(itemToDelete.File);
+                    }
+                    LoadDirectory(currentPathRight, currentPathRight, LVRight);
+                }
+                else if (e.Parameter.ToString() == "DeleteLeft")
+                {
+                    Item itemToDelete = LVLeft.SelectedItem as Item;
+                    if (itemToDelete.IsDirectory())
+                    {
+                        Directory.Delete(itemToDelete.File, true);
+                    }
+                    else
+                    {
+                        File.Delete(itemToDelete.File);
+                    }
+                    LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+                }
+            }
+        }
+
+        private void Refresh_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+            LoadDirectory(currentPathRight, currentPathRight, LVRight);
+        }
+
         #endregion
     }
 }

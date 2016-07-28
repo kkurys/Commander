@@ -27,5 +27,17 @@ namespace Commander
             Size = argSize;
             File = argFile;
         }
+
+        public bool IsDirectory()
+        {
+            if (Type == "<dir>")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
