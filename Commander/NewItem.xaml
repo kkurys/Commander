@@ -1,0 +1,24 @@
+﻿<Window x:Class="Commander.NewItem"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Commander"
+        mc:Ignorable="d"
+        Title="NewItem" SizeToContent="Height" Width="300" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!-- NAZWA + ROZSZERZENIE PLIKU !!! -->
+        <StackPanel Margin="5">
+            <Label Name="NewItemMessageLabel">grfdvbdfghf</Label>
+            <TextBox Name="ItemNameTB" Margin="0 5"></TextBox>
+        </StackPanel>
+        <StackPanel Margin="5" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Margin="5 0" Padding="10 3" Click="OkClose">Utwórz</Button>
+            <Button Padding="10 3" IsCancel="True">Anuluj</Button>
+        </StackPanel>
+    </Grid>
+</Window>

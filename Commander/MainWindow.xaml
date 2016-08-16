@@ -10,6 +10,7 @@
         <CommandBinding Command="local:Commands.CopyOrMove" CanExecute="ListViewItemSelected" Executed="CopyOrMove_Executed" />
         <CommandBinding Command="local:Commands.Delete" CanExecute="ListViewItemSelected" Executed="Delete_Executed" />
         <CommandBinding Command="local:Commands.Refresh" Executed="Refresh_Executed" />
+        <CommandBinding Command="local:Commands.CreateFileOrDirectory" Executed="CreateFileOrDirectory_Executed" />
     </Window.CommandBindings>
     <Grid Name="MainGrid">
         <Grid.RowDefinitions>
@@ -39,7 +40,9 @@
                 <Button FontFamily="Segoe UI Symbol" 
                         Content="&#xE1DA;" 
                         Margin="0 5" 
-                        Padding="5 0">
+                        Padding="5 0"
+                        Command="local:Commands.CreateFileOrDirectory"
+                        CommandParameter="CreateDirectoryLeft">
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
@@ -52,7 +55,9 @@
                 <Button FontFamily="Segoe UI Symbol" 
                         Content="&#xE132;"
                         Margin="5 5 0 5" 
-                        Padding="5 0">
+                        Padding="5 0"
+                        Command="local:Commands.CreateFileOrDirectory"
+                        CommandParameter="CreateFileLeft">
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
@@ -97,7 +102,9 @@
                 <Button FontFamily="Segoe UI Symbol" 
                         Content="&#xE1DA;" 
                         Margin="0 5" 
-                        Padding="5 0">
+                        Padding="5 0"
+                        Command="local:Commands.CreateFileOrDirectory"
+                        CommandParameter="CreateDirectoryRight">
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
@@ -110,7 +117,9 @@
                 <Button FontFamily="Segoe UI Symbol" 
                         Content="&#xE132;"
                         Margin="5 5 0 5" 
-                        Padding="5 0">
+                        Padding="5 0"
+                        Command="local:Commands.CreateFileOrDirectory"
+                        CommandParameter="CreateFileRight">
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>

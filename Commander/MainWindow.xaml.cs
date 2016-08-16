@@ -147,7 +147,10 @@ namespace Commander
             {
                 if (itemToCopy.IsDirectory())
                 {
-                    //DO ZROBIENIA REKURENCYJNE - KOPIOWANIE CAŁEGO DRZEWA FOLDERÓW I PLIKÓW
+                    string sourceFile = System.IO.Path.Combine(sourcePath, itemToCopy.Name);
+                    string targetFile = System.IO.Path.Combine(targetPath, itemToCopy.Name);
+
+                    CopyDirectory(sourceFile, targetFile, true);
                 }
                 else
                 {
@@ -174,6 +177,41 @@ namespace Commander
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void CopyDirectory(string sourceDirName, string destDirName, bool copySubDirs)
+        {
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: "
+                    + sourceDirName);
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            if (!Directory.Exists(destDirName))
+            {
+                Directory.CreateDirectory(destDirName);
+            }
+            
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string temppath = System.IO.Path.Combine(destDirName, file.Name);
+                file.CopyTo(temppath, false);
+            }
+            
+            if (copySubDirs)
+            {
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    string temppath = System.IO.Path.Combine(destDirName, subdir.Name);
+                    CopyDirectory(subdir.FullName, temppath, copySubDirs);
+                }
             }
         }
 
@@ -331,6 +369,12 @@ namespace Commander
             return false;
         }
 
+        public void RefreshDirectiories()
+        {
+            LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+            LoadDirectory(currentPathRight, currentPathRight, LVRight);
+        }
+
         #endregion
 
         #region commands
@@ -359,28 +403,29 @@ namespace Commander
             {
                 Item itemToCopy = LVLeft.SelectedItem as Item;
                 Copy(currentPathLeft, currentPathRight, itemToCopy);
-                LoadDirectory(currentPathRight, currentPathRight, LVRight);
+                //LoadDirectory(currentPathRight, currentPathRight, LVRight);
             }
             else if (e.Parameter.ToString() == "CopyLeft")
             {
                 Item itemToCopy = LVRight.SelectedItem as Item;
                 Copy(currentPathRight, currentPathLeft, itemToCopy);
-                LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+                //LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
             }
             else if (e.Parameter.ToString() == "MoveRight")
             {
                 Item itemToCopy = LVLeft.SelectedItem as Item;
                 Move(currentPathLeft, currentPathRight, itemToCopy);
-                LoadDirectory(currentPathRight, currentPathRight, LVRight);
-                LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+                //LoadDirectory(currentPathRight, currentPathRight, LVRight);
+                //LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
             }
             else if (e.Parameter.ToString() == "MoveLeft")
             {
                 Item itemToCopy = LVRight.SelectedItem as Item;
                 Move(currentPathRight, currentPathLeft, itemToCopy);
-                LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
-                LoadDirectory(currentPathRight, currentPathRight, LVRight);
+                //LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+                //LoadDirectory(currentPathRight, currentPathRight, LVRight);
             }
+            RefreshDirectiories();
         }
         
         private void Delete_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -398,7 +443,6 @@ namespace Commander
                     {
                         File.Delete(itemToDelete.File);
                     }
-                    LoadDirectory(currentPathRight, currentPathRight, LVRight);
                 }
                 else if (e.Parameter.ToString() == "DeleteLeft")
                 {
@@ -411,15 +455,53 @@ namespace Commander
                     {
                         File.Delete(itemToDelete.File);
                     }
-                    LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
+                }
+                RefreshDirectiories();
+            }
+        }
+
+        private void CreateFileOrDirectory_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            NewItem newItemWindow = new NewItem();
+
+            if (e.Parameter.ToString() == "CreateFileLeft")
+            {
+                newItemWindow.SetItemType("plik");
+                if (newItemWindow.ShowDialog() == true)
+                {
+
                 }
             }
+            else if (e.Parameter.ToString() == "CreateDirectoryLeft")
+            {
+                newItemWindow.SetItemType("folder");
+                if (newItemWindow.ShowDialog() == true)
+                {
+                    Directory.CreateDirectory(System.IO.Path.Combine(currentPathLeft, newItemWindow.ItemNameTB.Text));
+                }
+            }
+            else if (e.Parameter.ToString() == "CreateFileRight")
+            {
+                newItemWindow.SetItemType("plik");
+                if (newItemWindow.ShowDialog() == true)
+                {
+
+                }
+            }
+            else if (e.Parameter.ToString() == "CreateDirectoryRight")
+            {
+                newItemWindow.SetItemType("folder");
+                if (newItemWindow.ShowDialog() == true)
+                {
+                    Directory.CreateDirectory(System.IO.Path.Combine(currentPathRight, newItemWindow.ItemNameTB.Text));
+                }
+            }
+            RefreshDirectiories();
         }
 
         private void Refresh_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            LoadDirectory(currentPathLeft, currentPathLeft, LVLeft);
-            LoadDirectory(currentPathRight, currentPathRight, LVRight);
+            RefreshDirectiories();
         }
 
         #endregion
